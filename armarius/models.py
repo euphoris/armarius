@@ -3,7 +3,7 @@ import re
 
 from flask import current_app
 
-from sqlalchemy import create_engine, Column, ForeignKey
+from sqlalchemy import and_, create_engine, Column, ForeignKey
 from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.orm import create_session
 from sqlalchemy.types import DateTime, Integer, String, Text
@@ -43,6 +43,16 @@ class Page(Base):
         if not session:
             session = Session()
         return session.query(Page).filter_by(title=title).first()
+
+    @classmethod
+    def search(cls, query):
+        session = Session()
+        queries = query.split(' ')
+        titles = session.query(Page).filter(and_(
+            *[Page.title.like('%'+q+'%') for q in queries]))
+        contents = session.query(Page).filter(and_(
+            *[Page.content.like('%'+q+'%') for q in queries]))
+        return titles, contents
 
 
 class Version(Base):

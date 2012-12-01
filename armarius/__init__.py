@@ -99,6 +99,18 @@ def list_page():
                        title='Page list', content=content, special=True)
 
 
+@app.route('/search')
+def search():
+    query = request.args.get('q','')
+    titles = contents = []
+
+    if query:
+        titles, contents = Page.search(query)
+
+    return render_template('search.html',
+                           query=query, titles=titles, contents=contents)
+
+
 @app.route('/')
 def home():
     return redirect('/page/FrontPage')

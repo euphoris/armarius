@@ -8,6 +8,7 @@
             $(function(){
                 $('#page').pjax('a');
                 $('textarea').focus();
+                $('input[name=q]').focus();
             });
         </script>
     </head>
@@ -21,6 +22,11 @@
                     <li><a href="/">FrontPage</a>
                     <li><a href="{{ url_for('list_page') }}">page list</a>
                 </ul>
+
+                <form action="{{ url_for('search') }}">
+                    <input name="q" value='{{ query }}'>
+                    <button>search</button>
+                </form>
                 <!-- history -->
                 <!-- back-link -->
             </aside>

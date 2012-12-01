@@ -26,6 +26,7 @@ class TestBase(object):
 
         fixtures = [dict(title='test', content='no content'),
                    dict(title='to rename', content='blah'),
+                   dict(title='search target', content='abc123def'),
                    dict(title=u'테스트', content=u'한글')]
 
         session = Session()
@@ -122,3 +123,23 @@ class TestBase(object):
         res = self.get('list_page')
         assert res.status_code == HTTP_OK
         assert 'test' in res.data
+
+    def test_search(self):
+        res = self.get('search')
+        assert res.status_code == HTTP_OK
+
+        res = self.get('search', q='search')
+        assert res.status_code == HTTP_OK
+        assert 'search target' in res.data
+
+        res = self.get('search', q='123')
+        assert res.status_code == HTTP_OK
+        assert 'search target' in res.data
+
+        res = self.get('search', q='123 abc')
+        assert res.status_code == HTTP_OK
+        assert 'search target' in res.data
+
+        res = self.get('search', q='xyz 123')
+        assert res.status_code == HTTP_OK
+        assert 'search target' not in res.data

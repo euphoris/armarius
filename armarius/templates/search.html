@@ -1,0 +1,26 @@
+{% extends 'base.html' %}
+
+{% block body  %}
+<h1>Search</h1>
+
+<div class="page-content">
+    <form action="{{ url_for('search') }}">
+        <input name="q" value='{{ query }}'>
+        <button>search</button>
+    </form>
+    {% if query %}
+    <h2>title</h2>
+    <ul>
+        {% for page in titles %}
+        <li><a href="{{ url_for('view_page', title=page.title) }}">{{ page.pretty_title }}</a>
+        {% endfor %}
+    </ul>
+    <h2>content</h2>
+    <ul>
+        {% for page in contents %}
+        <li><a href="{{ url_for('view_page', title=page.title) }}">{{ page.pretty_title }}</a>
+        {% endfor %}
+    </ul>
+    {% endif %}
+</div>
+{% endblock %}
