@@ -1,0 +1,10 @@
+<title>{{title}} :: armarius</title>
+<h1>{{ title }}</h1>
+
+{% if not special %}
+<a href="{{ url_for('edit_page', title=title) }}">edit</a>
+{% endif %}
+
+<div class="page-content">
+{{ content|safe }}
+</div>
