@@ -1,5 +1,4 @@
 $(function(){
-    $('#page').pjax('a');
     $('textarea').focus();
     $('input[name=q]').focus();
 
