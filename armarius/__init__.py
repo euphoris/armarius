@@ -83,7 +83,11 @@ def save_page():
             page = Page(title=title, content=content)
         session.merge(page)
 
-    return redirect(url_for('view_page', title=title))
+    referer = request.headers.get('referer', '')
+    if url_for('view_page', title=old_title) in referer:
+        return 'OK'
+    else:
+        return redirect(url_for('view_page', title=title))
 
 
 @app.route('/page/special:page_list')

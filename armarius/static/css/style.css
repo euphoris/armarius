@@ -14,6 +14,10 @@ aside {
     display: table-cell;
 }
 
+#page-content {
+    outline: 0;
+}
+
 .page-form input {
     font-size: xx-large;
 }
@@ -21,6 +25,10 @@ aside {
 .page-form textarea {
     width: 100%;
     height: 500px;
+}
+
+.save {
+    display: none;
 }
 
 .clearer {

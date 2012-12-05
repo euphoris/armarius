@@ -43,12 +43,16 @@ class TestBase(object):
         return self.client.get(url_for(view_func, **kwargs))
 
     def post(self, view_func, **kwargs):
-        if 'data' in kwargs:
-            data = kwargs['data']
-            del kwargs['data']
-        else:
-            data = {}
-        return self.client.post(url_for(view_func, **kwargs), data=data)
+        names = ['headers', 'data']
+        newargs = {}
+        for name in names:
+            if name in kwargs:
+                newargs[name] = kwargs[name]
+                del kwargs[name]
+            else:
+                newargs[name] = {}
+
+        return self.client.post(url_for(view_func, **kwargs), **newargs)
 
     def redirect(self, res, view_func, **kwargs):
         assert res.status_code == HTTP_REDIRECT
@@ -71,11 +75,13 @@ class TestBase(object):
         res = self.get('edit_page', title='test')
         assert res.status_code == HTTP_OK
 
+        referer = url_for('view_page', title='test')
         res = self.post('save_page',
                         data=dict(title='test',
                                   old_title='test',
-                                  content='xxx'))
-        self.redirect(res, 'view_page', title='test')
+                                  content='xxx'),
+                        headers={'referer': referer})
+        assert res.status_code == HTTP_OK
 
         page = Page.load('test')
         assert page.content == 'xxx'
@@ -83,11 +89,13 @@ class TestBase(object):
     def test_rename_page(self):
         assert not Page.load('renamed')
 
+        referer = url_for('view_page', title='to rename')
         res = self.post('save_page',
                         data=dict(title='renamed',
                                   old_title='to rename',
-                                  content='blah'))
-        self.redirect(res, 'view_page', title='renamed')
+                                  content='blah'),
+                        headers={'referer': referer})
+        assert res.status_code == HTTP_OK
 
         assert not Page.load('to rename')
         assert Page.load('renamed')
