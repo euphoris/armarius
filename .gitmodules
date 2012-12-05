@@ -1,0 +1,3 @@
+[submodule "armarius/static/js/ckeditor"]
+	path = armarius/static/js/ckeditor
+	url = git://github.com/ckeditor/ckeditor-dev.git
