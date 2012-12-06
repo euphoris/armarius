@@ -172,6 +172,10 @@ class TestBase(object):
         assert res.status_code == HTTP_OK
         assert 'test' in res.data
 
+    def test_recent_changes(self):
+        res = self.get('recent_changes')
+        assert res.status_code == HTTP_OK
+
     def test_delete_page(self):
         res = self.get('delete_page', title='to delete')
         assert res.status_code == HTTP_OK

@@ -169,6 +169,15 @@ def orphan(title):
     return 'Orphan', pages
 
 
+@app.route('/recent_changes')
+@special_list
+def recent_changes(title):
+    session = Session()
+    pages = session.query(Page).filter(Page.edited_at != None).\
+            order_by(Page.edited_at.desc())
+    return 'Recent changes', pages
+
+
 @app.route('/delete/<title>', methods=['GET', 'POST'])
 def delete_page(title):
     if request.method == 'GET':

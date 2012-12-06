@@ -17,6 +17,7 @@
             <aside>
                 <ul>
                     <li><a href="/">FrontPage</a>
+                    <li><a href="{{ url_for('recent_changes') }}">recent changes</a>
                     <li><a href="{{ url_for('list_page') }}">page list</a>
                     <li><a href="{{ url_for('orphan') }}">orphan</a>
                 </ul>
@@ -25,8 +26,6 @@
                     <input name="q" value='{{ query }}'>
                     <button>search</button>
                 </form>
-                <!-- history -->
-                <!-- back-link -->
             </aside>
             <div id="page">
                 {% block body %}
