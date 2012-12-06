@@ -3,7 +3,7 @@ from tempfile import NamedTemporaryFile
 from flask import url_for
 
 from armarius import app
-from armarius.models import initdb, Page, Session
+from armarius.models import initdb, Page, Link, Session
 
 
 HTTP_OK = 200
@@ -24,17 +24,21 @@ class TestBase(object):
 
         initdb()
 
-        fixtures = [dict(title='test', content='no content'),
-                   dict(title='to rename', content='blah'),
-                   dict(title='to delete', content='blah'),
-                   dict(title='search target', content='abc123def'),
-                   dict(title=u'테스트', content=u'한글')]
+        fixtures = [(Page, dict(title='test', content='no content')),
+                    (Page, dict(title='to rename', content='blah')),
+                    (Page, dict(title='to delete', content='blah')),
+                    (Page, dict(title='search target', content='abc123def')),
+                    (Page, dict(title=u'테스트', content=u'한글')),
+                    # link test
+                    (Page, dict(title='link_source', content='blah')),
+                    (Link, dict(source='link_source', target='link_target1')),
+                    (Link, dict(source='link_source', target='link_target2'))]
 
         session = Session()
         with session.begin():
-            for fixture in fixtures:
-                page = Page(**fixture)
-                session.merge(page)
+            for table, fixture in fixtures:
+                t = table(**fixture)
+                session.merge(t)
 
     def teardown_method(self, method):
         self.ctx.pop()
@@ -127,6 +131,30 @@ class TestBase(object):
 
         res = self.get('view_page', title='hello world')
         self.redirect(res, 'view_page', title='hello_world')
+
+    def test_link(self):
+        session = Session()
+
+        def link(target):
+            return session.query(Link).filter_by(source='link_source',
+                                                 target=target).first()
+
+        assert link('link_target1')
+        assert link('link_target2')     # to be removed
+        assert not link('link_target3') # to be appended
+
+        content = """
+        <a href="/page/link_target1">link_target1</a>
+        <a href="/page/link_target3">link_target3</a>
+        """
+        self.post('save_page',
+                  data=dict(title='link_source',
+                            old_title='link_source',
+                            content=content))
+
+        assert link('link_target1')
+        assert not link('link_target2')
+        assert link('link_target3')
 
     def test_list_page(self):
         res = self.get('list_page')

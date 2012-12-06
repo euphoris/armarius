@@ -2,11 +2,12 @@
 import functools
 import os
 import re
+import xml.etree.ElementTree as etree
 #! encoding: utf-8
 
 from flask import Flask, request, render_template, redirect, url_for
 
-from .models import initdb, Page, Session
+from .models import initdb, Page, Link, Session
 
 
 app = Flask(__name__)
@@ -80,6 +81,32 @@ def save_page():
             page = Page(title=title, content=content)
         session.merge(page)
 
+    # link
+    targets = set()
+    url = url_for('view_page', title='')
+    xml = u'<page>{}</page>'.format(content)
+
+    root = etree.fromstring(xml.encode('utf-8'))
+    for a in root.iter('a'):
+        href = a.attrib.get('href','')
+        if href.startswith(url):
+            targets.add(unicode(href[len(url):]))
+
+    with session.begin():
+        links = session.query(Link).filter_by(source=title)
+        old_targets = set([link.target for link in links])
+
+        removed = old_targets - targets
+        for target in removed:
+            link = session.query(Link).filter_by(target=target).first()
+            session.delete(link)
+
+        appended = targets - old_targets
+        for target in appended:
+            link = Link(source=title, target=target)
+            session.merge(link)
+
+    # redirect
     referer = request.headers.get('referer', '')
     if url_for('view_page', title=old_title) in referer:
         return 'OK'

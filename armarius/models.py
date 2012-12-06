@@ -68,5 +68,5 @@ class Version(Base):
 class Link(Base):
     __tablename__ = 'link'
 
-    source = Column(Integer, ForeignKey('page.pk'), primary_key=True)
-    target = Column(Integer, ForeignKey('page.pk'), primary_key=True)
+    source = Column(String(128), primary_key=True)
+    target = Column(String(128), primary_key=True)
