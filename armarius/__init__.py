@@ -41,22 +41,21 @@ def load_page(view):
 @app.route('/page/<title>')
 @load_page
 def view_page(page):
-    return pjax_render('view_page.html',
-                       title=page.pretty_title, content=page.content)
+    return pjax_render('view_page.html', page=page)
 
 
 @app.route('/edit/<title>')
 @load_page
 def edit_page(page):
-    return pjax_render('edit_page.html',
-                       title=page.pretty_title, content=page.content)
+    return pjax_render('edit_page.html', page=page)
 
 
 @app.route('/create/<title>')
 def create_page(title):
     if Page.load(title):
         return redirect(url_for('view_page', title=title))
-    return render_template('edit_page.html', title=title)
+    return render_template('edit_page.html',
+                           page=dict(title=title, pretty_title=title))
 
 
 clear_cr = re.compile(r'\r+')
@@ -98,7 +97,9 @@ def list_page():
             url_for('view_page', title=page.title), page.pretty_title)
 
     return pjax_render('view_page.html',
-                       title='Page list', content=content, special=True)
+                       page=dict(pretty_title='Page list',
+                                 content=content,
+                                 special=True))
 
 
 @app.route('/delete/<title>', methods=['GET', 'POST'])

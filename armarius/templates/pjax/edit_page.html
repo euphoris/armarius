@@ -1,7 +1,7 @@
 <form class="page-form" action="{{ url_for('save_page') }}" method="POST">
-    <input type="hidden" name="old_title" value="{{ title }}">
-    <input name="title" value="{{ title }}">
-    <textarea name="content">{{content}}</textarea>
+    <input type="hidden" name="old_title" value="{{ page.title }}">
+    <input name="title" value="{{ page.pretty_title }}">
+    <textarea name="content">{{page.content}}</textarea>
     <button>SAVE</button>
-    <a href="{{ url_for('view_page', title=title) }}">cancel</a>
+    <a href="{{ url_for('view_page', title=page.title) }}">cancel</a>
 </form>
