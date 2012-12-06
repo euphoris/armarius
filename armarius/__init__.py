@@ -6,6 +6,7 @@ import xml.etree.ElementTree as etree
 #! encoding: utf-8
 
 from flask import Flask, request, render_template, redirect, url_for
+from sqlalchemy.sql import func
 
 from .models import initdb, Page, Link, Session
 
@@ -114,19 +115,54 @@ def save_page():
         return redirect(url_for('view_page', title=title))
 
 
-@app.route('/page/special:page_list')
-def list_page():
-    content = u''
+def special_list(query):
+    @functools.wraps(query)
+    def view(title=None):
+        content = u''
+        page_title, pages = query(title)
+        for page in pages:
+            content += u'<li><a href="{}">{}</a>'.format(
+                url_for('view_page', title=page.title), page.pretty_title)
+
+        return pjax_render('view_page.html',
+                           page=dict(pretty_title=page_title,
+                                     content=content),
+                           special=True)
+    return view
+
+
+@app.route('/page_list')
+@special_list
+def list_page(title):
     session = Session()
     pages = session.query(Page).all()
-    for page in pages:
-        content += u'<li><a href="{}">{}</a>'.format(
-            url_for('view_page', title=page.title), page.pretty_title)
+    return 'Page list', pages
 
-    return pjax_render('view_page.html',
-                       page=dict(pretty_title='Page list',
-                                 content=content,
-                                 special=True))
+
+@app.route('/backlink/<title>')
+@special_list
+def backlink(title):
+    session = Session()
+    links = session.query(Page, Link).\
+            filter(Link.target==title).\
+            filter(Page.title==Link.source).\
+            all()
+    links = [link.Page for link in links]
+    return 'Backlink: ' + title, links
+
+
+@app.route('/orphan')
+@special_list
+def orphan(title):
+    session = Session()
+    stmt = session.query(Link.target, func.count('*').\
+            label('link_count')).\
+            group_by(Link.target).subquery()
+    results = session.query(Page, stmt.c.link_count).\
+            outerjoin(stmt, Page.title==stmt.c.target).\
+            filter(stmt.c.link_count==None)
+    pages = [page for page, _ in results]
+    return 'Orphan', pages
 
 
 @app.route('/delete/<title>', methods=['GET', 'POST'])

@@ -29,6 +29,7 @@ class TestBase(object):
                     (Page, dict(title='to delete', content='blah')),
                     (Page, dict(title='search target', content='abc123def')),
                     (Page, dict(title=u'테스트', content=u'한글')),
+                    (Page, dict(title='orphan', content='blah')),
                     # link test
                     (Page, dict(title='link_source', content='blah')),
                     (Link, dict(source='link_source', target='link_target1')),
@@ -155,6 +156,16 @@ class TestBase(object):
         assert link('link_target1')
         assert not link('link_target2')
         assert link('link_target3')
+
+    def test_backlink(self):
+        res = self.get('backlink', title='link_target1')
+        assert res.status_code == HTTP_OK
+
+    def test_orphan(self):
+        res = self.get('orphan')
+        assert res.status_code == HTTP_OK
+        assert 'link_target1' not in res.data
+        assert 'orphan' in res.data
 
     def test_list_page(self):
         res = self.get('list_page')
