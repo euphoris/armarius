@@ -6,7 +6,6 @@ import re
 
 from flask import Flask, request, render_template, redirect, url_for
 
-from . import syntax
 from .models import initdb, Page, Session
 
 
@@ -42,9 +41,8 @@ def load_page(view):
 @app.route('/page/<title>')
 @load_page
 def view_page(page):
-    content = syntax.moinmoin(page.content)
     return pjax_render('view_page.html',
-                       title=page.pretty_title, content=content)
+                       title=page.pretty_title, content=page.content)
 
 
 @app.route('/edit/<title>')
