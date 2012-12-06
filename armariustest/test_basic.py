@@ -26,6 +26,7 @@ class TestBase(object):
 
         fixtures = [dict(title='test', content='no content'),
                    dict(title='to rename', content='blah'),
+                   dict(title='to delete', content='blah'),
                    dict(title='search target', content='abc123def'),
                    dict(title=u'테스트', content=u'한글')]
 
@@ -131,6 +132,18 @@ class TestBase(object):
         res = self.get('list_page')
         assert res.status_code == HTTP_OK
         assert 'test' in res.data
+
+    def test_delete_page(self):
+        res = self.get('delete_page', title='to delete')
+        assert res.status_code == HTTP_OK
+
+        session = Session()
+        before = session.query(Page).count()
+        res = self.post('delete_page', title='to delete')
+        self.redirect(res, 'home')
+        after = session.query(Page).count()
+        assert not Page.load('to delete')
+        assert before-1 == after
 
     def test_search(self):
         res = self.get('search')

@@ -101,6 +101,18 @@ def list_page():
                        title='Page list', content=content, special=True)
 
 
+@app.route('/delete/<title>', methods=['GET', 'POST'])
+def delete_page(title):
+    if request.method == 'GET':
+        return render_template('delete_page.html', title=title)
+    else:
+        session = Session()
+        with session.begin():
+            page = Page.load(title, session)
+            session.delete(page)
+        return redirect(url_for('home'))
+
+
 @app.route('/search')
 def search():
     query = request.args.get('q','')
