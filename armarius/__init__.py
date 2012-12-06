@@ -2,6 +2,7 @@
 import functools
 import os
 import re
+import urllib
 import xml.etree.ElementTree as etree
 #! encoding: utf-8
 
@@ -90,6 +91,9 @@ def save_page():
     root = etree.fromstring(xml.encode('utf-8'))
     for a in root.iter('a'):
         href = a.attrib.get('href','')
+        href = urllib.unquote(href)
+        if isinstance(href, str):
+            href = href.decode('utf-8')
         if href.startswith(url):
             targets.add(unicode(href[len(url):]))
 
