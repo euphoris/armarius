@@ -11,8 +11,7 @@
 
 <button class="edit">edit</button>
 <button class="save">save</button>
+
 {% endif %}
 
-<div id="page-content" contentEditable="false">
-    {{ page.content|safe }}
-</div>
+<div id="page-content" contentEditable="false">{{ page.content|safe }}</div>

@@ -1,3 +1,24 @@
+var html = '';
+
+function save(){
+    var new_html = $('#page-content').html();
+
+    if( html != new_html){
+        $.ajax({
+            url: $('#save-form').attr('action'),
+            type: 'post',
+            data: {
+                content: new_html,
+                old_title: $('input[name="old_title"]').val(),
+                title: $('input[name="title"]').val(),
+                success: function(){
+                    html = new_html;
+                }
+            }
+        });
+    }
+}
+
 $(function(){
     $('textarea').focus();
     $('input[name=q]').focus();
@@ -21,9 +42,14 @@ $(function(){
     CKEDITOR.disableAutoInline = true;
 
     // edit buttons
+    var interval = null;
     $('.edit').click(function(){
         $('#page-content').attr('contentEditable', true);
         CKEDITOR.inline( 'page-content' );
+
+        html = $('#page-content').html();
+
+        interval = window.setInterval(save, 5000);
 
         $('.save').toggle();
         $('.edit').toggle();
@@ -37,15 +63,9 @@ $(function(){
         $('.save').toggle();
         $('.edit').toggle();
 
-        $.ajax({
-            url: $('#save-form').attr('action'),
-            type: 'post',
-            data: {
-                content: $('#page-content').html(),
-                old_title: $('input[name="old_title"]').val(),
-                title: $('input[name="title"]').val()
-            }
-        });
+        if( interval ) clearInterval(interval);
+        save();
+
         return false;
     });
 });
