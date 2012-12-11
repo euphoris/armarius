@@ -1,8 +1,9 @@
+#! encoding: utf8
 from tempfile import NamedTemporaryFile
 
 from flask import url_for
 
-from armarius import app
+from armarius import app, decode_quoted
 from armarius.models import initdb, Page, Link, Session
 
 
@@ -164,6 +165,10 @@ class TestBase(object):
         assert link('link_target1')
         assert not link('link_target2')
         assert link('link_target3')
+
+    def test_decode_quoted(self):
+        assert decode_quoted(u'%ED%85%8C%EC%8A%A4%ED%8A%B8') == u'테스트'
+        assert decode_quoted(u'테스트') == u'테스트'
 
     def test_backlink(self):
         res = self.get('backlink', title='link_target1')

@@ -6,7 +6,9 @@ import urllib
 
 from flask import Flask, request, render_template, redirect, url_for
 from sqlalchemy.sql import func
+
 from bs4 import BeautifulSoup
+import chardet
 
 from .models import initdb, Page, Link, Session
 
@@ -60,6 +62,16 @@ def create_page(title):
                            page=dict(title=title, pretty_title=title))
 
 
+def decode_quoted(href):
+    try:
+        href = str(href)
+        unquote = urllib.unquote(href)
+        encoding  = chardet.detect(unquote)['encoding']
+        unquote = unquote.decode(encoding)
+    except UnicodeError:
+        unquote = urllib.unquote(href)
+    return unquote
+
 clear_cr = re.compile(r'\r+')
 clear_nbsp = re.compile(r'\&nbsp;')
 @app.route('/edit', methods=['POST'])
@@ -89,9 +101,13 @@ def save_page():
 
     for a in soup.find_all('a'):
         href = a.get('href','')
-        href = urllib.unquote(href)
+
+        if not href:
+            continue
+
+        href = decode_quoted(href)
         if href.startswith(url):
-            targets.add(unicode(href[len(url):]))
+            targets.add(href[len(url):])
 
     with session.begin():
         links = session.query(Link).filter_by(source=title)
