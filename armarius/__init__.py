@@ -3,11 +3,10 @@ import functools
 import os
 import re
 import urllib
-import xml.etree.ElementTree as etree
-#! encoding: utf-8
 
 from flask import Flask, request, render_template, redirect, url_for
 from sqlalchemy.sql import func
+from bs4 import BeautifulSoup
 
 from .models import initdb, Page, Link, Session
 
@@ -86,14 +85,11 @@ def save_page():
     # link
     targets = set()
     url = url_for('view_page', title='')
-    xml = u'<page>{}</page>'.format(content)
+    soup = BeautifulSoup(content)
 
-    root = etree.fromstring(xml.encode('utf-8'))
-    for a in root.iter('a'):
-        href = a.attrib.get('href','')
+    for a in soup.find_all('a'):
+        href = a.get('href','')
         href = urllib.unquote(href)
-        if isinstance(href, str):
-            href = href.decode('utf-8')
         if href.startswith(url):
             targets.add(unicode(href[len(url):]))
 

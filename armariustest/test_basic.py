@@ -92,6 +92,14 @@ class TestBase(object):
         page = Page.load('test')
         assert page.content == 'xxx'
 
+    def test_parse_error(self):
+        res = self.post('save_page',
+                        data=dict(title='test',
+                                  old_title='test',
+                                  content='<a>xxx'))
+        assert res.status_code == HTTP_REDIRECT
+
+
     def test_rename_page(self):
         assert not Page.load('renamed')
 
