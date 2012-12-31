@@ -19,6 +19,32 @@ function save(){
     }
 }
 
+function urlize(){
+    var nodelist = [],
+        link_re = /(\bhttps?:\/\/[-A-Z0-9+&amp;@#\/%?=~_|!:,.;]+)/ig;
+
+    $('#page-content').contents().each(function(){
+        nodelist.push(this);
+    });
+
+    while( nodelist.length > 0 ){
+        var node = nodelist.pop();
+
+        if( node.nodeName != 'A' && node.nodeName != 'a' ){
+            var contents = $(node).contents();
+            contents.filter(function(){ return this.nodeName == '#text' }).
+                replaceWith(function(){
+                    return this.textContent.replace(link_re, '<a href="$1">$1</a>');
+                });
+
+            contents.filter(function(){ return this.nodeName != '#text' })
+                .each(function(){
+                    nodelist.push(this);
+                });
+        }
+    }
+}
+
 $(function(){
     $('textarea').focus();
     $('input[name=q]').focus();
@@ -64,6 +90,8 @@ $(function(){
         $('.edit').toggle();
 
         if( interval ) clearInterval(interval);
+
+        urlize();
         save();
 
         return false;
