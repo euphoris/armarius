@@ -22,6 +22,7 @@ function save(){
 function urlize(){
     var nodelist = [],
         link_re = /(\bhttps?:\/\/[-A-Z0-9+&amp;@#\/%?=~_|!:,.;]+)/ig;
+        wiki_link = /\[\[([^\]]+)\]\]/ig
 
     $('#page-content').contents().each(function(){
         nodelist.push(this);
@@ -34,7 +35,10 @@ function urlize(){
             var contents = $(node).contents();
             contents.filter(function(){ return this.nodeName == '#text' }).
                 replaceWith(function(){
-                    return this.textContent.replace(link_re, '<a href="$1">$1</a>');
+                    var r = this.textContent;
+                    r = r.replace(link_re, '<a href="$1">$1</a>');
+                    r = r.replace(wiki_link, '<a href="/page/$1">$1</a>');
+                    return r
                 });
 
             contents.filter(function(){ return this.nodeName != '#text' })
