@@ -1,5 +1,25 @@
 {% extends 'base.html' %}
 
+
+{% block sidebar %}
+    <button class="edit">edit</button>
+    <button class="save">save</button>
+{% endblock %}
+
+
 {% block body  %}
-{% include 'pjax/view_page.html' %}
+<title>{{ page.pretty_title }} :: armarius</title>
+<h1>{{ page.pretty_title }}</h1>
+{% if not special %}
+<a href="{{ url_for('delete_page', title=page.title) }}">delete</a>
+<a href="{{ url_for('backlink', title=page.title) }}">backlink</a>
+
+<form id="save-form" action="{{ url_for('save_page') }}" method="POST">
+    <input type="text" name="title" value="{{ page.title }}">
+    <input type="hidden" name="old_title" value="{{ page.title }}">
+</form>
+
+{% endif %}
+
+<div id="page-content" contentEditable="false">{{ page.content|safe }}</div>
 {% endblock %}

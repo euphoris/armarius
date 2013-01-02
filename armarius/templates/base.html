@@ -26,6 +26,9 @@
                     <input name="q" value='{{ query }}'>
                     <button>search</button>
                 </form>
+
+                {% block sidebar %}
+                {% endblock %}
             </aside>
             <div id="page">
                 {% block body %}
