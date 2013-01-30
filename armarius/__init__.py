@@ -106,6 +106,7 @@ def save_page():
             continue
 
         href = decode_quoted(href)
+        href = re.sub(r'\s+', r'_', href)
         if href.startswith(url):
             targets.add(href[len(url):])
 

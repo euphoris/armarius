@@ -166,6 +166,24 @@ class TestBase(object):
         assert not link('link_target2')
         assert link('link_target3')
 
+    def test_spaced_link(self):
+        session = Session()
+
+        self.post('save_page',
+                  data=dict(title='spaced_link',
+                            old_title='spaced_link',
+                            content="""
+        <a href="/page/link target1">link_target1</a>
+        <a href="/page/link%20target3">link_target3</a>"""))
+
+        def link(target):
+            return session.query(Link).filter_by(source='spaced_link',
+                                                 target=target).first()
+
+        assert link('link_target1')
+        assert not link('link_target2')
+        assert link('link_target3')
+
     def test_decode_quoted(self):
         assert decode_quoted(u'%ED%85%8C%EC%8A%A4%ED%8A%B8') == u'테스트'
         assert decode_quoted(u'테스트') == u'테스트'
