@@ -45,7 +45,24 @@ def load_page(view):
 @app.route('/page/<title>')
 @load_page
 def view_page(page):
-    return pjax_render('view_page.html', page=page)
+    soup = BeautifulSoup(page.content)
+    toc = u''
+    levels = [0]
+    for node in soup.find_all(re.compile('h\d')):
+        level = int(node.name[1])
+
+        if level > levels[-1]:
+            toc += '<ul>'
+            levels.append(level)
+
+        while level < levels[-1]:
+            toc += '</ul>'
+            levels.pop()
+        
+        toc += u'<li>{}</li>'.format(node.text)
+
+    toc += '</ul>'*len(levels)
+    return pjax_render('view_page.html', page=page, toc=toc)
 
 
 @app.route('/edit/<title>')

@@ -1,6 +1,7 @@
 #! encoding: utf8
 from tempfile import NamedTemporaryFile
 
+from bs4 import BeautifulSoup
 from flask import url_for
 
 from armarius import app, decode_quoted
@@ -183,6 +184,23 @@ class TestBase(object):
         assert link('link_target1')
         assert not link('link_target2')
         assert link('link_target3')
+
+    def test_toc(self):
+        self.post('save_page',
+                  data=dict(title='toc_test',
+                            old_title='toc_test',
+                            content="""
+                                <h1>heading 1</h1>
+                                <h2>heading 1.1</h2>
+                                <h1>heading 2</h1>
+                            """))
+
+        res = self.get('view_page', title='toc_test')
+        soup = BeautifulSoup(res.data)
+        toc = soup.find(id="toc")
+        assert toc
+        assert toc.ul.li.string == 'heading 1'
+        assert toc.ul.ul.li.string == 'heading 1.1'
 
     def test_decode_quoted(self):
         assert decode_quoted(u'%ED%85%8C%EC%8A%A4%ED%8A%B8') == u'테스트'
