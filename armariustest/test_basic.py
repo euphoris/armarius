@@ -199,8 +199,16 @@ class TestBase(object):
         soup = BeautifulSoup(res.data)
         toc = soup.find(id="toc")
         assert toc
-        assert toc.ul.li.string == 'heading 1'
-        assert toc.ul.ul.li.string == 'heading 1.1'
+
+        first_h1 = toc.ul.li.a
+        assert first_h1.string == 'heading 1'
+        assert first_h1['data-level'] == '1'
+        assert first_h1['data-pos'] == '0'
+
+        first_h2 = toc.ul.ul.li.a
+        assert first_h2.string == 'heading 1.1'
+        assert first_h2['data-level'] == '2'
+        assert first_h2['data-pos'] == '0'
 
     def test_decode_quoted(self):
         assert decode_quoted(u'%ED%85%8C%EC%8A%A4%ED%8A%B8') == u'테스트'

@@ -71,6 +71,15 @@ $(function(){
         ];
     CKEDITOR.disableAutoInline = true;
 
+    // toc link
+    $('.toclink').click(function(){
+        var level = $(this).attr('data-level'),
+            pos = $(this).attr('data-pos'),
+            heading = $('#page-content h'+level+':eq('+pos+')');
+        $(document).scrollTop(heading.offset().top);
+        return false;
+    });
+
     // edit buttons
     var interval = null;
     $('.edit').click(function(){
