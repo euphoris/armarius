@@ -32,6 +32,7 @@ class Page(Base):
     pk = Column(Integer, primary_key=True)
     title = Column(String(128), unique=True)
     content = Column(Text())
+    toc = Column(Text())
     edited_at = Column(DateTime(),onupdate=datetime.datetime.now)
 
     @property
@@ -62,6 +63,7 @@ class Version(Base):
     page = Column(Integer, ForeignKey('page.pk'))
     title = Column(String(128))
     content = Column(Text())
+    toc = Column(Text())
     edited_at = Column(DateTime())
 
 

@@ -45,27 +45,7 @@ def load_page(view):
 @app.route('/page/<title>')
 @load_page
 def view_page(page):
-    soup = BeautifulSoup(page.content)
-    toc = u''
-    levels = [0]
-    headings = [-1, -1, -1, -1, -1, -1, -1]
-    for node in soup.find_all(re.compile('h\d')):
-        level = int(node.name[1])
-        headings[level] += 1
-
-        if level > levels[-1]:
-            toc += '<ul>'
-            levels.append(level)
-
-        while level < levels[-1]:
-            toc += '</ul>'
-            levels.pop()
-        
-        toc += u'<li><a href="#" data-level="{}" data-pos="{}" class="toclink">{}</a></li>'.format(
-                level, headings[level], node.text)
-
-    toc += '</ul>'*len(levels)
-    return pjax_render('view_page.html', page=page, toc=toc)
+    return pjax_render('view_page.html', page=page)
 
 
 @app.route('/edit/<title>')
@@ -104,14 +84,37 @@ def save_page():
     content = clear_cr.sub('', content)
     content = clear_nbsp.sub(' ', content)
 
+    # table of contents
+    soup = BeautifulSoup(content)
+    toc = u''
+    levels = [0]
+    headings = [-1, -1, -1, -1, -1, -1, -1]
+    for node in soup.find_all(re.compile('h\d')):
+        level = int(node.name[1])
+        headings[level] += 1
+
+        if level > levels[-1]:
+            toc += '<ul>'
+            levels.append(level)
+
+        while level < levels[-1]:
+            toc += '</ul>'
+            levels.pop()
+        
+        toc += u'<li><a href="#" data-level="{}" data-pos="{}" class="toclink">{}</a></li>'.format(
+                level, headings[level], node.text)
+
+    toc += '</ul>'*len(levels)
+
     session = Session()
     with session.begin():
         page = Page.load(old_title, session)
         if page:
             page.title = title
             page.content = content
+            page.toc = toc
         else:
-            page = Page(title=title, content=content)
+            page = Page(title=title, content=content, toc=toc)
         session.merge(page)
 
     # link
