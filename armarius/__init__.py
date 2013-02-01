@@ -150,7 +150,7 @@ def save_page():
     # redirect
     referer = request.headers.get('referer', '')
     if url_for('view_page', title=old_title) in referer:
-        return 'OK'
+        return toc
     else:
         return redirect(url_for('view_page', title=title))
 

@@ -14,6 +14,9 @@ function save(){
                 success: function(){
                     html = new_html;
                 }
+            },
+            success: function(data){
+                $('#toc').html(data);
             }
         });
     }
