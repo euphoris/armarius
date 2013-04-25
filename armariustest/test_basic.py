@@ -14,7 +14,6 @@ HTTP_REDIRECT= 302
 
 class TestBase(object):
     def setup_method(self, method):
-        app.config['PATH'] = '/Users/jae-myoungyu/Documents/wiki/'
         self.f = NamedTemporaryFile()
         uri = 'sqlite:///' + self.f.name
         app.config['DATABASE'] = uri
