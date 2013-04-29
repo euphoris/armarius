@@ -14,4 +14,7 @@ setup(
     url='http://github.com/euphoris/armarius',
     tests_require=['pytest'],
     install_requires=['flask', 'SQLAlchemy', 'beautifulsoup4', 'chardet'],
+    entry_points= {
+            'console_scripts': ['armarius = armarius.scripts:run_server']
+        },
     )
