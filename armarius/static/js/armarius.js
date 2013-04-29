@@ -57,8 +57,6 @@ $(function(){
     $('input[name=q]').focus();
 
     // ckeditor configuration
-    CKEDITOR.plugins.addExternal( 'timestamp', plugin_addr );
-    CKEDITOR.config.extraPlugins = 'timestamp';
     CKEDITOR.config.toolbar =
         [
         { name: 'clipboard', items : [ 'Cut','Copy','Paste','PasteText','PasteFromWord','-','Undo','Redo' ] },
