@@ -13,7 +13,10 @@ setup(
     maintainer_email='euphoris@gmail.com',
     url='http://github.com/euphoris/armarius',
     tests_require=['pytest'],
-    install_requires=['flask', 'SQLAlchemy', 'beautifulsoup4', 'chardet'],
+    install_requires=['flask', 'SQLAlchemy', 'beautifulsoup4', 'chardet',
+                      'WebPattern',
+                      'misaka',
+                      ],
     entry_points= {
             'console_scripts': ['armarius = armarius.scripts:run_server']
         },

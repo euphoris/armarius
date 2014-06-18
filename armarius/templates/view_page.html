@@ -2,7 +2,12 @@
 
 
 {% block sidebar %}
+
+    {% if page.source_type == 'markdown' %}
+    <a href="{{ url_for('edit_page', title=page.title) }}">edit</a>
+    {% else %}
     <button class="edit">edit</button>
+    {% endif %}
     <button class="save">save</button>
 
     <div id="toc">

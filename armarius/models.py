@@ -6,7 +6,7 @@ from flask import current_app
 from sqlalchemy import and_, create_engine, Column, ForeignKey
 from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.orm import create_session
-from sqlalchemy.types import DateTime, Integer, String, Text
+from sqlalchemy.types import DateTime, Enum, Integer, String, Text
 
 
 def get_engine():
@@ -32,6 +32,8 @@ class Page(Base):
     pk = Column(Integer, primary_key=True)
     title = Column(String(128), unique=True)
     content = Column(Text())
+    source = Column(Text())
+    source_type = Column(Enum('markdown','html'), server_default='html')
     toc = Column(Text())
     edited_at = Column(DateTime(),onupdate=datetime.datetime.now)
 

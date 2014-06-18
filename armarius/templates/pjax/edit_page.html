@@ -1,7 +1,8 @@
 <form class="page-form" action="{{ url_for('save_page') }}" method="POST">
     <input type="hidden" name="old_title" value="{{ page.title }}">
     <input name="title" value="{{ page.pretty_title }}">
-    <textarea name="content">{{page.content}}</textarea>
+    <textarea name="content">{% if page.source_type == 'html' %}{{page.content}}{% else %}{{ page.source }}{% endif %}</textarea>
+    <input type="checkbox" name="markup" value="markdown" {% if page.source_type == 'markdown' %}checked{% endif%}>markdown
     <button>SAVE</button>
     <a href="{{ url_for('view_page', title=page.title) }}">cancel</a>
 </form>

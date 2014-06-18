@@ -5,6 +5,7 @@ import re
 import urllib
 
 from flask import Flask, request, render_template, redirect, url_for
+import misaka
 from sqlalchemy.sql import func
 
 from bs4 import BeautifulSoup
@@ -80,7 +81,13 @@ def save_page():
     title = request.form['title']
     title = re.sub(r'\s+', r'_', title)
 
-    content = request.form['content']
+    source_type = request.form.get('markup', 'html')
+    if source_type == 'markdown':
+        source = request.form['content']
+        content = misaka.html(source)
+    else:
+        source = ''
+        content = request.form['content']
     content = clear_cr.sub('', content)
     content = clear_nbsp.sub(' ', content)
 
@@ -113,8 +120,11 @@ def save_page():
             page.title = title
             page.content = content
             page.toc = toc
+            page.source_type = source_type
+            page.source = source
         else:
-            page = Page(title=title, content=content, toc=toc)
+            page = Page(title=title, content=content, source=source,
+                        source_type=source_type, toc=toc)
         session.merge(page)
 
     # link
