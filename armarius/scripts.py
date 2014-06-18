@@ -17,4 +17,4 @@ def run_server():
 
     port = app.config.get('PORT', 5000)
 
-    app.run(port=port)
+    app.run(host='0.0.0.0', port=port)
